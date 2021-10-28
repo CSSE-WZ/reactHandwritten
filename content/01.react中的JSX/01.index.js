@@ -1,5 +1,5 @@
-import React from './react';
-import ReactDOM from './react-dom'; //React 的DOM渲染库
+import React from 'react';
+import ReactDOM from 'react-dom'; //React 的DOM渲染库
 
 // ReactDOM.render(
 //   <h1 className='title' style={{ color: 'red' }}>
