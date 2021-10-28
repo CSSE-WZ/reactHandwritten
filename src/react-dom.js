@@ -20,6 +20,10 @@ function createDOM(vdom) {
   if (type === React_TEXT) {
     dom = document.createTextNode(props.content); // 文本元素，字符串或数字
   } else if (typeof type === 'function') {
+    if (type.isReactComponent) {
+      // 说明这是一个React类组件
+      return mountClassComponent(vdom);
+    }
     // 说明这是一个React函数组件的React元素
     return mountFunctionComponent(vdom);
   } else {
@@ -41,6 +45,16 @@ function createDOM(vdom) {
   return dom;
 }
 
+/**
+ * 挂载类组件
+ * @param {*} vdom
+ */
+function mountClassComponent(vdom) {
+  let { type, props } = vdom;
+  let classInstance = new type(props);
+  let renderVdom = classInstance.render();
+  return createDOM(renderVdom);
+}
 /**
  * 挂载函数组件元素
  * @param {*} vdom

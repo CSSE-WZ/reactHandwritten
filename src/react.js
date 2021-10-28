@@ -1,3 +1,4 @@
+import { Component } from './Component';
 import { warpToDOM } from './utils';
 
 /**
@@ -25,6 +26,6 @@ function createElement(type, config, children) {
     props,
   };
 }
-const React = { createElement };
+const React = { createElement, Component };
 
 export default React;

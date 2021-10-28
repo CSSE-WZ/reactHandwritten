@@ -3,28 +3,33 @@ import ReactDOM from './react-dom'; //React 的DOM渲染库
 
 /**
  *
- * React.createElement
- * 参数1 标签的类型 h1 div span
- * 参数2 属性的JS对象
- * 参数3 往后的都是儿子们
- * 返回值 是React元素=虚拟DOM，也是一个对象
+ * 组件分为内置原生组件和自定义组件
+ * 内置组件：p h1 span type字符串
+ * 自定义组件：类型是一个函数；而类组件的父类Component的原型上有一个属性isReactComponent={}
+ *           自定义组件的名称必须是大些字母开头，返回值有且只有一个根元素
  */
 
-function FunctionComponent(props) {
-  return React.createElement(
-    'h1',
-    {
-      className: 'title',
-      style: { color: 'red' },
-    },
-    React.createElement('span', null, 'hello'),
-    props.name
-  );
+class ClassComponent extends React.Component {
+  render() {
+    //  JSX需要经过babel转换后才能渲染
+    // return (
+    //   <h1 setyle={{ color: 'red' }} className='title'>
+    //     <span>hello </span> {this.props.name}
+    //   </h1>
+    // );
+    return React.createElement(
+      'h1',
+      {
+        className: 'title',
+        style: { color: 'red' },
+      },
+      React.createElement('span', null, 'hello'),
+      this.props.name
+    );
+  }
 }
 
-let element = <FunctionComponent name='world' />;
-
-console.log('111', element, JSON.stringify(element, null, 2));
-
-//ReactDOM 才是最核心干活的，他在浏览器执行的时候，可以把React元素，也就是虚拟DOM转换成真实DOM
-ReactDOM.render(element, document.getElementById('root'));
+ReactDOM.render(
+  <ClassComponent name='title' />,
+  document.getElementById('root')
+);
