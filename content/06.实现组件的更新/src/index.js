@@ -5,7 +5,6 @@ class Counter extends React.Component {
   state = { number: 0 };
 
   handleClick = () => {
-    debugger;
     this.setState({ number: this.state.number + 1 }, () => {
       console.log('111', this.state.number); // 0
     });
