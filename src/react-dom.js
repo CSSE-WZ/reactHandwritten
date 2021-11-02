@@ -53,11 +53,14 @@ function createDOM(vdom) {
  * @param {*} vdom
  */
 function mountClassComponent(vdom) {
-  let { type, props } = vdom;
+  let { type, props, ref } = vdom;
   let classInstance = new type(props);
   let renderVdom = classInstance.render();
   // 挂载的时候计算出虚拟DOM，然后挂到类的实例上
   classInstance.oldRenderVdom = vdom.oldRenderVdom = renderVdom;
+  if (ref) {
+    ref.current = classInstance; // 让ref.current属性指向类组件的实例
+  }
   return createDOM(renderVdom);
 }
 /**
