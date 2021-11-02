@@ -8,11 +8,17 @@ import { warpToDOM } from './utils';
  * @param {*} children 第一个儿子
  */
 function createElement(type, config, children) {
+  let ref; // 用来获取虚拟DOM实例的
+  let key; // 用来区分同一个父亲的不同的儿子
   if (config) {
     delete config.__source;
     delete config.self;
+    ref = config.ref;
+    delete config.ref;
+    key = config.key;
+    delete config.key;
   }
-  let props = { ...config };
+  let props = { ...config }; // porps里没有key和ref
   if (arguments.length > 3) {
     // arguments.length > 3表示有多个儿子
     // children 可能是数组，也可能是一个字符串或数字，或者是null/undefined
@@ -25,8 +31,14 @@ function createElement(type, config, children) {
   return {
     type,
     props,
+    ref,
+    key,
   };
 }
-const React = { createElement, Component };
+
+function createRef() {
+  return { current: null };
+}
+const React = { createElement, Component, createRef };
 
 export default React;

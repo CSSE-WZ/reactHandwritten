@@ -16,7 +16,7 @@ function render(vdom, container) {
  * @param {*} vdom  虚拟DOM
  */
 function createDOM(vdom) {
-  let { type, props } = vdom;
+  let { type, props, ref } = vdom;
   let dom; // 真实DOM元素
   if (type === React_TEXT) {
     dom = document.createTextNode(props.content); // 文本元素，字符串或数字
@@ -42,7 +42,9 @@ function createDOM(vdom) {
   }
   // 让虚拟DOM的dom属性指向它的真实DOM
   vdom.dom = dom;
-
+  if (ref) {
+    ref.current = dom; // 让ref.current属性指向真实的DOM实例
+  }
   return dom;
 }
 

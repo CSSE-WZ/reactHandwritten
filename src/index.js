@@ -1,44 +1,30 @@
 import React from './react';
 import ReactDOM from './react-dom'; //React 的DOM渲染库
 
-class Counter extends React.Component {
-  state = { number: 0 };
+class Sum extends React.Component {
+  constructor(props) {
+    super(props);
+    this.numberA = React.createRef(); // {current: null}
+    this.numberB = React.createRef(); // {current: null}
+    this.result = React.createRef(); // {current: null}
+  }
 
   handleClick = () => {
-    this.setState({ number: this.state.number + 1 });
-    console.log('111', this.state.number); // 0
-    this.setState({ number: this.state.number + 1 });
-    console.log('222', this.state.number); // 0
-
-    setTimeout(() => {
-      this.setState({ number: this.state.number + 1 });
-      console.log('333', this.state.number); // 2
-      this.setState({ number: this.state.number + 1 });
-      console.log('444', this.state.number); // 3
-    });
+    let numberA = this.numberA.current.value;
+    let numberB = this.numberB.current.value;
+    this.result.current.value = parseFloat(numberA) + parseFloat(numberB);
   };
 
   render() {
     return (
-      // <div>
-      //   <p>{this.state.number}</p>
-      //   <button onClick={this.handleClick}>+</button>
-      // </div>
-      React.createElement(
-        'div',
-        null,
-        /*#__PURE__*/ React.createElement('p', null, this.state.number),
-        /*#__PURE__*/ React.createElement(
-          'button',
-          {
-            onClick: this.handleClick,
-          },
-          '+'
-        )
-      )
+      <div>
+        <input ref={this.numberA} />
+        <input ref={this.numberB} />
+        <button onClick={this.handleClick}> + </button>
+        <input ref={this.result} />
+      </div>
     );
   }
 }
-let CounterComponent = React.createElement(Counter, null);
 
-ReactDOM.render(CounterComponent, document.getElementById('root'));
+ReactDOM.render(<Sum />, document.getElementById('root'));
