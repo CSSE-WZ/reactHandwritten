@@ -14,7 +14,7 @@ function createElement(type, config, children) {
     delete config.__source;
     delete config.self;
     ref = config.ref;
-    delete config.ref;
+    // delete config.ref;
     key = config.key;
     delete config.key;
   }
@@ -39,6 +39,14 @@ function createElement(type, config, children) {
 function createRef() {
   return { current: null };
 }
-const React = { createElement, Component, createRef };
+
+function forwardRef(FunctionComponent) {
+  return class extends Component {
+    render() {
+      return FunctionComponent(this.props, this.props.ref);
+    }
+  };
+}
+const React = { createElement, Component, createRef, forwardRef };
 
 export default React;

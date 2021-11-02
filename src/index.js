@@ -1,24 +1,11 @@
 import React from './react';
 import ReactDOM from './react-dom'; //React 的DOM渲染库
 
-class TextInput extends React.Component {
-  constructor(props) {
-    super(props);
-    this.inputRef = React.createRef();
-  }
-
-  getTextInoutFocus = () => {
-    this.inputRef.current.focus();
-  };
-  render() {
-    return (
-      <div>
-        <input type='text' ref={this.inputRef} />
-      </div>
-    );
-  }
+function TextInput(props, ref) {
+  return <input type='text' ref={ref} />;
 }
 
+const ForwardTextInput = React.forwardRef(TextInput);
 class Form extends React.Component {
   constructor(props) {
     super(props);
@@ -27,14 +14,14 @@ class Form extends React.Component {
 
   handleClick = () => {
     // this.textInputRef.current指向TextInputRef组件的实例
-    this.textInputRef.current.getTextInoutFocus();
+    this.textInputRef.current.focus();
   };
 
   render() {
     return (
       <div>
         <button onClick={this.handleClick}>焦点</button>
-        <TextInput ref={this.textInputRef} />
+        <ForwardTextInput ref={this.textInputRef} />
       </div>
     );
   }
