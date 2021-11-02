@@ -13,8 +13,25 @@ export let updateQueue = {
 };
 
 function shouldUpdate(classInstance, nextProps, nextState) {
-  classInstance.state = nextState; // 真正修改实例的状态
-  classInstance.forceUpdate(); // 然后调用类组件实例的updateComponent进行更新
+  let willUpdate = true; // 是否更新，默认true
+  if (
+    classInstance.shouldComponentUpdate &&
+    !classInstance.shouldComponentUpdate(nextProps, nextState)
+  ) {
+    willUpdate = false; // 如果shouldComponentUpdate方法存在且返回false，则不更新
+  }
+  if (willUpdate && classInstance.componentWillUpdate) {
+    classInstance.componentWillUpdate();
+  }
+  // 其实不管要不要更新，属性和方法否要更新为最新的
+  if (nextProps) {
+    classInstance.props = nextProps; // 修改实例属性
+  }
+  classInstance.state = nextState; // 修改实例状态
+
+  if (willUpdate) {
+    classInstance.forceUpdate(); // 然后调用类组件实例的updateComponent进行更新
+  }
 }
 
 class Updater {
@@ -100,6 +117,10 @@ export class Component {
     let oldDOM = findDOM(oldRenderVdom);
     compareTwoVdom(oldDOM.parentNode, oldRenderVdom, newRenderVdom); // 比较差异，把更新同步到真实DOM
     this.oldRenderVdom = newRenderVdom;
+
+    if (this.componentDidUpdate) {
+      this.componentDidUpdate(this.props, this.state);
+    }
   }
 }
 

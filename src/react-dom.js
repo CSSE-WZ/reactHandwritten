@@ -54,8 +54,12 @@ function createDOM(vdom) {
  */
 function mountClassComponent(vdom) {
   let { type, props, ref } = vdom;
-  let classInstance = new type(props);
+  let defaultProps = type.defaultProps || {};
+  let classInstance = new type({ ...defaultProps, ...props });
+  classInstance.componentWillMount && classInstance.componentWillMount();
   let renderVdom = classInstance.render();
+  classInstance.componentDidMount && classInstance.componentDidMount();
+
   // 挂载的时候计算出虚拟DOM，然后挂到类的实例上
   classInstance.oldRenderVdom = vdom.oldRenderVdom = renderVdom;
   if (ref) {
