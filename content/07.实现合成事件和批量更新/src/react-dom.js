@@ -1,4 +1,4 @@
-import { React_TEXT } from './constants';
+import { REACT_TEXT } from './constants';
 import { addEvent } from './event';
 
 /**
@@ -18,7 +18,7 @@ function render(vdom, container) {
 function createDOM(vdom) {
   let { type, props } = vdom;
   let dom; // 真实DOM元素
-  if (type === React_TEXT) {
+  if (type === REACT_TEXT) {
     dom = document.createTextNode(props.content); // 文本元素，字符串或数字
   } else if (typeof type === 'function') {
     if (type.isReactComponent) {

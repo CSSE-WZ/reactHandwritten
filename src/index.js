@@ -1,6 +1,40 @@
 import React from './react';
 import ReactDOM from './react-dom'; //React 的DOM渲染库
 
+class Child extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
+
+  componentWillMount() {
+    console.log('child1: componentWillMount');
+  }
+  render() {
+    console.log('child2: render');
+    return <div>Child:{this.props.number}</div>;
+  }
+
+  componentDidMount() {
+    console.log('child3: componentDidMount');
+  }
+
+  componentWillReceiveProps(nextProps, nextState) {
+    console.log('child4: componentWillReceiveProps');
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    console.log('child5: shouldComponentUpdate');
+    return nextProps.number % 3 === 0;
+  }
+
+  componentWillUnmount() {
+    console.log('child6: componentWillUnmount');
+  }
+}
+function FunctionChildComponent(props) {
+  return <div>{props.count}</div>;
+}
 class Counter extends React.Component {
   static defaultProps = { name: 'Hello' };
   constructor(props) {
@@ -27,12 +61,13 @@ class Counter extends React.Component {
   }
 
   render() {
-    console.log('3.render');
+    console.log('3.render', this.state.number);
     return (
-      <div>
-        <p>{this.props.name}</p>
-        <p>{this.state.number}</p>
+      <div id={'parent'}>
+        <p>Counter:{this.state.number}</p>
+        {this.state.number === 4 ? null : <Child number={this.state.number} />}
         <button onClick={this.handleClick}> + </button>
+        <FunctionChildComponent count={this.state.number} />
       </div>
     );
   }

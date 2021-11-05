@@ -1,4 +1,4 @@
-import { React_TEXT } from './constants';
+import { REACT_TEXT } from './constants';
 
 /**
  * 不管原来是什么样的元素，都转成对象的形式，方便后续的DOM-DIFF
@@ -8,7 +8,7 @@ import { React_TEXT } from './constants';
 export function warpToDOM(element) {
   if (typeof element === 'string' || typeof element === 'number') {
     return {
-      type: React_TEXT,
+      type: REACT_TEXT,
       props: { content: element },
     };
   } else {

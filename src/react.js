@@ -1,4 +1,5 @@
 import { Component } from './Component';
+import { REACT_FORWARD_REF_TYPE } from './constants';
 import { warpToDOM } from './utils';
 
 /**
@@ -40,13 +41,21 @@ function createRef() {
   return { current: null };
 }
 
-function forwardRef(FunctionComponent) {
-  return class extends Component {
-    render() {
-      return FunctionComponent(this.props, this.props.ref);
-    }
+// function forwardRef(FunctionComponent) {
+//   return class extends Component {
+//     render() {
+//       return FunctionComponent(this.props, this.props.ref);
+//     }
+//   };
+// }
+
+function forwardRef(render) {
+  return {
+    $$typeof: REACT_FORWARD_REF_TYPE,
+    render, // 原来的那个函数组件
   };
 }
+
 const React = { createElement, Component, createRef, forwardRef };
 
 export default React;
