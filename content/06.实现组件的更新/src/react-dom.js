@@ -65,6 +65,7 @@ function mountClassComponent(vdom) {
 function mountFunctionComponent(vdom) {
   let { type, props } = vdom;
   let renderVdom = type(props);
+  // 挂载的时候计算出虚拟DOM，然后挂到函数组件vdom.oldRenderVdom属性上，用于后续根据虚拟DOM上的dom属性拿到真实DOM
   vdom.oldRenderVdom = renderVdom;
   return createDOM(renderVdom);
 }

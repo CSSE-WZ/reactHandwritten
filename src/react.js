@@ -3,7 +3,7 @@ import { REACT_FORWARD_REF_TYPE } from './constants';
 import { warpToDOM } from './utils';
 
 /**
- *
+ * 返回React元素即虚拟DOM，本质还是一个JS对象
  * @param {*} type 类型
  * @param {*} config 配置对象，即属性对象
  * @param {*} children 第一个儿子

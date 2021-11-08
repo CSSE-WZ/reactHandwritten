@@ -6,7 +6,7 @@ import ReactDOM from './react-dom'; //React 的DOM渲染库
  * 组件分为内置原生组件和自定义组件
  * 内置组件：p h1 span type字符串
  * 自定义组件：类型是一个函数；而类组件的父类Component的原型上有一个属性isReactComponent={}
- *           自定义组件的名称必须是大些字母开头，返回值有且只有一个根元素
+ *           自定义组件的名称必须是大写字母开头，返回值有且只有一个根元素
  */
 
 class ClassComponent extends React.Component {

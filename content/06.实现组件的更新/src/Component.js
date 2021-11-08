@@ -2,7 +2,7 @@ import { compareTwoVdom, findDOM } from './react-dom';
 
 function shouldUpdate(classInstance, nextState) {
   classInstance.state = nextState; // 真正修改实例的状态
-  classInstance.forceUpdate(); // 然后调用类组件实例的updateComponent进行更新
+  classInstance.forceUpdate(); // 然后调用类组件实例的forceUpdate进行更新
 }
 
 class Updater {
@@ -56,7 +56,7 @@ class Updater {
 }
 
 export class Component {
-  static isReactComponent = {}; //自定义简化实现
+  static isReactComponent = {}; //自定义简化实现，用于后续判断组件类型是类组件还是函数组件
 
   constructor(props) {
     this.props = props;

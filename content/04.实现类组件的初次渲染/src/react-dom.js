@@ -51,8 +51,8 @@ function createDOM(vdom) {
  */
 function mountClassComponent(vdom) {
   let { type, props } = vdom;
-  let classInstance = new type(props);
-  let renderVdom = classInstance.render();
+  let classInstance = new type(props); // 类组件的实例
+  let renderVdom = classInstance.render(); // 调用实例的render方法生成虚拟DOM
   return createDOM(renderVdom);
 }
 /**

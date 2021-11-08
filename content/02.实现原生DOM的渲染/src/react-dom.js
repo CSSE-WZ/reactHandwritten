@@ -23,6 +23,7 @@ function createDOM(vdom) {
     dom = document.createElement(type); // 原生DOM类型
   }
   if (props) {
+    // 感觉这是多余的，根据前面createElement方法，props必定是一个对象
     updateProps(dom, {}, props); // 根据虚拟DOM中属性更新真实DOM属性
     if (typeof props.children === 'object' && props.children.type) {
       // 如果是对象，说明只有一个儿子
@@ -44,7 +45,7 @@ function reconcileChildren(childrenVdom, parentDOM) {
   }
 }
 /**
- *
+ * 更新真实DOM的属性
  * @param {*} dom
  * @param {*} oldProps
  * @param {*} newProps

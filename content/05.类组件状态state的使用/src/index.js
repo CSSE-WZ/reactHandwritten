@@ -32,7 +32,7 @@ class Counter extends React.Component {
   state = { number: 0 };
 
   // 类的属性---这样的写法让函数里的this永远指向组件的实例
-  // 在事件处理函数里，setState的调用会批量进行，setState并不会立即修改this.state，而是等到事件处理函数结束后在进行更新
+  // 在事件处理函数里，setState的调用会批量进行，setState并不会立即修改this.state，而是等到事件处理函数结束后再进行更新
   handleClick = () => {
     this.setState({ number: this.state.number + 1 });
     console.log('111', this.state.number); // 0

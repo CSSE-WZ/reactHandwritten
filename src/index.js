@@ -80,3 +80,30 @@ class Counter extends React.Component {
 }
 
 ReactDOM.render(<Counter />, document.getElementById('root'));
+
+// 初次渲染
+// constructor
+// componentWillMount
+// render
+// componentDidMount
+
+/**
+ * 1、初次挂载
+ * constructor
+ * componentWillMount
+ * render
+ * componentDidMount
+ * 2、状态改变
+ * shouldComponentUpdate
+ * componentwillUpdate
+ * render
+ * componentDidUpdate
+ * 3、父组件props改变时，子组件更新
+ * componentWillReceiveProps
+ * shouldComponentUpdate
+ * componentWillUpdate
+ * render
+ * componentDidUpdate
+ * 4、组件卸载
+ * componentWillUnmount
+ */
