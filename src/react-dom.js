@@ -158,7 +158,6 @@ export function compareTwoVdom(parentDOM, oldVdom, newVdom, nextDOM) {
   } else if (oldVdom && !newVdom) {
     let oldDOM = findDOM(oldVdom); // 老的真实DOM
     // 如果老的存在，而新的为null，则说明此时是卸载组件
-    debugger;
     oldDOM.parentNode.removeChild(oldDOM); // 删除老的真实DOM
     if (oldVdom.classInstance && oldVdom.classInstance.componentWillUnmount) {
       oldVdom.classInstance.componentWillUnmount(); // 执行组件卸载方法
@@ -167,7 +166,6 @@ export function compareTwoVdom(parentDOM, oldVdom, newVdom, nextDOM) {
     // 如果老的不存在，新的存在，说明此时是初次渲染，创建新的DOM并添加到父DOM容器中
     let newDOM = createDOM(newVdom);
     if (nextDOM) {
-      debugger;
       parentDOM.insertBefore(newDOM, nextDOM);
     } else {
       parentDOM.appendChild(newDOM);

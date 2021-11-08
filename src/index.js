@@ -1,39 +1,36 @@
+import { render } from '@testing-library/react';
 import React from './react';
 import ReactDOM from './react-dom'; //React 的DOM渲染库
 
 class Child extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = { number: 0 };
   }
 
   componentWillMount() {
     console.log('child1: componentWillMount');
   }
+  // 为什么这里要用static静态方法？
+  // 因为以前有很多人在componentWillReceiveProps中调用this.setState()，引起死循环；改用类的静态方法，则静态方法中this指向的是类本身而不是类的实例，无法调用this.setState
+  static getDerivedStateFromProps(nextProps, prevState) {
+    // console.log('this', this, 111, this.getDerivedStateFromProps, nextProps);
+
+    return { ...prevState, number: nextProps.number * 2 };
+    // return null; // 返回null的话则不改变state
+  }
   render() {
     console.log('child2: render');
-    return <div>Child:{this.props.number}</div>;
+    return <div>Child:{this.state.number}</div>;
   }
 
   componentDidMount() {
     console.log('child3: componentDidMount');
   }
 
-  componentWillReceiveProps(nextProps, nextState) {
-    console.log('child4: componentWillReceiveProps');
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    console.log('child5: shouldComponentUpdate');
-    return nextProps.number % 3 === 0;
-  }
-
   componentWillUnmount() {
     console.log('child6: componentWillUnmount');
   }
-}
-function FunctionChildComponent(props) {
-  return <div>{props.count}</div>;
 }
 class Counter extends React.Component {
   static defaultProps = { name: 'Hello' };
@@ -50,11 +47,6 @@ class Counter extends React.Component {
   componentWillMount() {
     console.log('2.componentWillMount');
   }
-  // 当属性或者状态发生改变的话，会走此方法来决定，是否要渲染更新
-  shouldComponentUpdate(nextProps, nextState) {
-    console.log('5.shouldComponentUpdate');
-    return nextState.number % 2 === 0; // 奇数不更新，偶数更新
-  }
 
   componentWillUpdate() {
     console.log('6.componentWillUpdate');
@@ -65,9 +57,8 @@ class Counter extends React.Component {
     return (
       <div id={'parent'}>
         <p>Counter:{this.state.number}</p>
-        {this.state.number === 4 ? null : <Child number={this.state.number} />}
+        <Child number={this.state.number} />
         <button onClick={this.handleClick}> + </button>
-        <FunctionChildComponent count={this.state.number} />
       </div>
     );
   }
@@ -81,29 +72,42 @@ class Counter extends React.Component {
 
 ReactDOM.render(<Counter />, document.getElementById('root'));
 
-// 初次渲染
-// constructor
-// componentWillMount
-// render
-// componentDidMount
-
 /**
- * 1、初次挂载
+ *  旧版生命周期（React15）
+ * 1、挂载阶段
  * constructor
  * componentWillMount
  * render
  * componentDidMount
- * 2、状态改变
+ * 2、更新阶段
+ * 状态改变
  * shouldComponentUpdate
  * componentwillUpdate
  * render
  * componentDidUpdate
- * 3、父组件props改变时，子组件更新
+ * 父组件props改变时，子组件更新
  * componentWillReceiveProps
  * shouldComponentUpdate
  * componentWillUpdate
  * render
  * componentDidUpdate
- * 4、组件卸载
+ * 3、卸载阶段
+ * componentWillUnmount
+ */
+
+/**
+ * 新版生命周期（React16）
+ * 1、创建时
+ * constructor
+ * getDerivedStateFromProps
+ * render
+ * componentDidMount
+ * 2、更新时
+ * getDerivedStateFromProps
+ * shouldComponentUpdate
+ * render
+ * getSnapshotBeforeUpdate
+ * componentDidUpdate
+ * 3、卸载时
  * componentWillUnmount
  */

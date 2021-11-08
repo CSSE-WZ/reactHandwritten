@@ -27,7 +27,17 @@ function shouldUpdate(classInstance, nextProps, nextState) {
   if (nextProps) {
     classInstance.props = nextProps; // 修改实例属性
   }
-  classInstance.state = nextState; // 修改实例状态
+  if (classInstance.constructor.getDerivedStateFromProps) {
+    let nextState = classInstance.constructor.getDerivedStateFromProps(
+      nextProps,
+      classInstance.state
+    );
+    if (nextState) {
+      classInstance.state = nextState; // 修改实例状态
+    }
+  } else {
+    classInstance.state = nextState; // 修改实例状态
+  }
 
   if (willUpdate) {
     classInstance.forceUpdate(); // 然后调用类组件实例的updateComponent进行更新
