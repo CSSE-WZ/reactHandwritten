@@ -69,6 +69,12 @@ function mountClassComponent(vdom) {
   let { type, props, ref } = vdom;
   let defaultProps = type.defaultProps || {};
   let classInstance = new type({ ...defaultProps, ...props });
+
+  // 如果类上有contextType属性，则给类的实例添加context属性
+  if (type.contextType) {
+    classInstance.context = type.contextType._value;
+  }
+
   vdom.classInstance = classInstance; // 往虚拟DOM上挂载类组件实例，用于后续通过实例更新类组件
   classInstance.componentWillMount && classInstance.componentWillMount();
   let renderVdom = classInstance.render();

@@ -56,6 +56,20 @@ function forwardRef(render) {
   };
 }
 
-const React = { createElement, Component, createRef, forwardRef };
+function createContext() {
+  let context = { Provider };
+  function Provider({ value, children }) {
+    context._value = value;
+    return children;
+  }
+  return context;
+}
+const React = {
+  createElement,
+  Component,
+  createRef,
+  forwardRef,
+  createContext,
+};
 
 export default React;

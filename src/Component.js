@@ -121,6 +121,12 @@ export class Component {
    */
   forceUpdate() {
     let oldRenderVdom = this.oldRenderVdom; // 老的虚拟DOM
+
+    // 如果类上有contextType属性，则给类的实例添加context属性
+    if (this.constructor.contextType) {
+      this.context = this.constructor.contextType._value;
+    }
+
     let newRenderVdom = this.render(); // 新的虚拟DOM
 
     let extraArgs =
