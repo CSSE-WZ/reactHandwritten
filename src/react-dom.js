@@ -130,7 +130,9 @@ function updateProps(dom, oldProps, newProps) {
       // dom[key.toLocaleLowerCase()] = newProps[key];
       addEvent(dom, key.toLocaleLowerCase(), newProps[key]);
     } else {
-      dom[key] = newProps[key];
+      if (newProps[key]) {
+        dom[key] = newProps[key];
+      }
     }
   }
 }

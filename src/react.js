@@ -36,6 +36,22 @@ function createElement(type, config, children) {
     key,
   };
 }
+/**
+ * 根据一个老的元素，克隆出一个新的元素
+ * @param {*} oldElement 老元素
+ * @param {*} newProps 新属性
+ * @param {*} children 新的儿子们
+ * @return {*} newElement 返回新元素
+ */
+function cloneElement(oldElement, newProps, children) {
+  if (arguments.length > 3) {
+    children = Array.prototype.slice.call(arguments, 2).map(warpToDOM);
+  } else {
+    children = warpToDOM(children);
+  }
+  let props = { ...oldElement.props, ...newProps, children };
+  return { ...oldElement, props };
+}
 
 function createRef() {
   return { current: null };
@@ -67,12 +83,14 @@ function createContext() {
   }
   return context;
 }
+
 const React = {
   createElement,
   Component,
   createRef,
   forwardRef,
   createContext,
+  cloneElement,
 };
 
 export default React;

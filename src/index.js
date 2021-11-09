@@ -6,35 +6,70 @@ import ReactDOM from './react-dom'; //React 的DOM渲染库
 // 两大用途：属性代理 反向继承
 // const NewComponent = higherOrderComponent(OldComponent)
 
-// 高阶组件来自于高阶函数
-const withLoading = OldComponent => {
-  return class extends React.Component {
-    show = () => {
-      let div = document.createElement('div');
-      div.innerHTML = `<p id='loading' style="position: absolute;top:100px;z-index:10;background-color:gray">loading...</p>`;
-      document.body.appendChild(div);
-    };
+// 基于反向继承：拦截生命周期、state、渲染过程
 
-    hide = () => {
-      document.getElementById('loading') &&
-        document.getElementById('loading').remove();
+// 这是一个第三方组件库，现在想要修改此组件
+class AntDesignButton extends React.Component {
+  state = { name: 'zhangsan' };
+  componentWillMount() {
+    console.log('AntDesignButton componentWillMount');
+  }
+  componentDidMount() {
+    console.log('AntDesignButton componentDidMount');
+  }
+  render() {
+    console.log('AntDesignButton render');
+    return <button name={this.state.name}>{this.props.title}</button>;
+  }
+}
+const warpper = OldComponent => {
+  return class extends OldComponent {
+    // state = { number: 0 };
+    constructor(props) {
+      super(props);
+      // ...this.state 合并父类的state
+      this.state = { ...this.state, number: 0 };
+    }
+    componentWillMount() {
+      console.log('warpper componentWillMount');
+    }
+    componentDidMount() {
+      console.log('warpper componentDidMount');
+    }
+    handleClick = () => {
+      this.setState({ number: this.state.number + 1 });
     };
-
     render() {
-      return <OldComponent {...this.props} show={this.show} hide={this.hide} />;
+      console.log('warpper render');
+      // super在普通方法中，指向父类的原型对象；在静态方法中，指向父类
+      let renderElement = super.render();
+      // React元素不可修改
+      // renderElement.props.children = this.state.number;
+      // renderElement.props.onClick = this.props.handleClick;
+      let newProps = {
+        ...renderElement.props,
+        onClick: this.handleClick,
+      };
+      let cloneElement = React.cloneElement(
+        renderElement,
+        newProps,
+        this.state.number
+      );
+      return cloneElement;
     }
   };
 };
-@withLoading
-class Panel extends React.Component {
-  render() {
-    return (
-      <div>
-        <button onClick={this.props.show}>显示</button>
-        <button onClick={this.props.hide}>隐藏</button>
-      </div>
-    );
-  }
-}
-// let LoadingPanel = withLoading(Panel);
-ReactDOM.render(<Panel />, document.getElementById('root'));
+
+let WarpperAntDesignButton = warpper(AntDesignButton);
+
+ReactDOM.render(
+  <WarpperAntDesignButton title='标题' />,
+  document.getElementById('root')
+);
+
+class Father {}
+class Child extends Father {}
+let child = new Child();
+console.log('111', child.__proto__.__proto__ === Father.prototype);
+console.log('222', child.__proto__ === Child.prototype);
+console.log('222', child.constructor === Child);
