@@ -57,10 +57,13 @@ function forwardRef(render) {
 }
 
 function createContext() {
-  let context = { Provider };
+  let context = { Provider, Consumer };
   function Provider({ value, children }) {
     context._value = value;
     return children;
+  }
+  function Consumer({ children }) {
+    return children(context._value);
   }
   return context;
 }

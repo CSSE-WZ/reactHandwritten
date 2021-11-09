@@ -4,24 +4,41 @@ import ReactDOM from './react-dom'; //React 的DOM渲染库
 let ThemeContext = React.createContext();
 // ThemeContext = { Provider, Consumer } // Provider提供者 Consumer 消费者:一般使用在函数组件中
 let { Provider, Consumer } = ThemeContext;
-
-class Header extends React.Component {
-  static contextType = ThemeContext;
-  render() {
-    return (
-      <div
-        style={{
-          margin: '10px',
-          border: `1px solid ${this.context.color}`,
-          padding: '5px',
-        }}
-      >
-        头部
-        <Title />
-      </div>
-    );
-  }
+function Header() {
+  return (
+    <Consumer>
+      {value => (
+        <div
+          style={{
+            margin: '10px',
+            border: `1px solid ${value.color}`,
+            padding: '5px',
+          }}
+        >
+          头部
+          <Title />
+        </div>
+      )}
+    </Consumer>
+  );
 }
+// class Header extends React.Component {
+//   static contextType = ThemeContext;
+//   render() {
+//     return (
+//       <div
+//         style={{
+//           margin: '10px',
+//           border: `1px solid ${this.context.color}`,
+//           padding: '5px',
+//         }}
+//       >
+//         头部
+//         <Title />
+//       </div>
+//     );
+//   }
+// }
 class Title extends React.Component {
   static contextType = ThemeContext;
   render() {
