@@ -1,76 +1,62 @@
-import { render } from '@testing-library/react';
 import React from './react';
 import ReactDOM from './react-dom'; //React 的DOM渲染库
 
-class Child extends React.Component {
+class ScrollList extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { number: 0 };
+    this.state = { messages: [] };
+    this.warpper = React.createRef();
   }
 
-  componentWillMount() {
-    console.log('child1: componentWillMount');
-  }
-  // 为什么这里要用static静态方法？
-  // 因为以前有很多人在componentWillReceiveProps中调用this.setState()，引起死循环；改用类的静态方法，则静态方法中this指向的是类本身而不是类的实例，无法调用this.setState
-  static getDerivedStateFromProps(nextProps, prevState) {
-    // console.log('this', this, 111, this.getDerivedStateFromProps, nextProps);
-
-    return { ...prevState, number: nextProps.number * 2 };
-    // return null; // 返回null的话则不改变state
-  }
-  render() {
-    console.log('child2: render');
-    return <div>Child:{this.state.number}</div>;
-  }
-
-  componentDidMount() {
-    console.log('child3: componentDidMount');
-  }
-
-  componentWillUnmount() {
-    console.log('child6: componentWillUnmount');
-  }
-}
-class Counter extends React.Component {
-  static defaultProps = { name: 'Hello' };
-  constructor(props) {
-    super(props);
-    this.state = { number: 0 };
-    console.log('1.constructor');
-  }
-
-  handleClick = () => {
-    this.setState({ number: this.state.number + 1 });
+  addState = () => {
+    const { messages } = this.state;
+    this.setState({ messages: [messages.length, ...messages] });
   };
-
-  componentWillMount() {
-    console.log('2.componentWillMount');
+  componentDidMount() {
+    this.timer = setInterval(() => {
+      this.addState();
+    }, 1000);
+  }
+  getSnapshotBeforeUpdate() {
+    return {
+      prevScrollTop: this.warpper.current.scrollTop, // 更新前向上滚动的高度
+      prevScrollHeight: this.warpper.current.scrollHeight, // 更新前内容的高度
+    };
   }
 
-  componentWillUpdate() {
-    console.log('6.componentWillUpdate');
-  }
+  componentDidUpdate(
+    prevProps,
+    prevState,
+    { prevScrollTop, prevScrollHeight }
+  ) {
+    console.log('prevScrollTop', prevScrollTop, prevScrollHeight);
 
+    this.warpper.current.scrollTop =
+      prevScrollTop + this.warpper.current.scrollHeight - prevScrollHeight;
+  }
   render() {
-    console.log('3.render', this.state.number);
+    console.log('1', this.state);
+
+    let style = {
+      height: '100px',
+      width: '200px',
+      border: '1px solid black',
+      overflow: 'scroll',
+    };
     return (
-      <div id={'parent'}>
-        <p>Counter:{this.state.number}</p>
-        <Child number={this.state.number} />
-        <button onClick={this.handleClick}> + </button>
+      <div style={style} ref={this.warpper}>
+        {this.state.messages.map((message, index) => (
+          <div key={index}>{message}</div>
+        ))}
       </div>
     );
   }
-  componentDidUpdate() {
-    console.log('7.componentDidUpdate');
-  }
-  componentDidMount() {
-    console.log('4.componentDidMount');
+  componentWillUnmount() {
+    clearInterval(this.timer);
   }
 }
 
-ReactDOM.render(<Counter />, document.getElementById('root'));
+ReactDOM.render(<ScrollList />, document.getElementById('root'));
 
 /**
  *  旧版生命周期（React15）

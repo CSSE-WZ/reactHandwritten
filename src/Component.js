@@ -123,13 +123,15 @@ export class Component {
     let oldRenderVdom = this.oldRenderVdom; // 老的虚拟DOM
     let newRenderVdom = this.render(); // 新的虚拟DOM
 
+    let extraArgs =
+      (this.getSnapshotBeforeUpdate && this.getSnapshotBeforeUpdate()) || {};
     // 根据老的虚拟DOM查到老的真实DOM
     let oldDOM = findDOM(oldRenderVdom);
     compareTwoVdom(oldDOM.parentNode, oldRenderVdom, newRenderVdom); // 比较差异，把更新同步到真实DOM
     this.oldRenderVdom = newRenderVdom;
 
     if (this.componentDidUpdate) {
-      this.componentDidUpdate(this.props, this.state);
+      this.componentDidUpdate(this.props, this.state, extraArgs);
     }
   }
 }

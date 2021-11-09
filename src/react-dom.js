@@ -82,7 +82,7 @@ function mountClassComponent(vdom) {
   let dom = createDOM(renderVdom);
   // 暂时把DidMount方法暂存到dom上
   if (classInstance.componentDidMount) {
-    dom.componentDidMount = classInstance.componentDidMount.bind(this);
+    dom.componentDidMount = classInstance.componentDidMount.bind(classInstance);
   }
   return dom;
 }
