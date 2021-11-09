@@ -12,10 +12,10 @@
     "web-vitals": "^1.0.1"
   },
   "scripts": {
-    "start": "export DISABLE_NEW_JSX_TRANSFORM=true&&react-scripts start",
-    "build": "export DISABLE_NEW_JSX_TRANSFORM=true&&react-scripts build",
-    "test": "export DISABLE_NEW_JSX_TRANSFORM=true&&react-scripts test",
-    "eject": "export DISABLE_NEW_JSX_TRANSFORM=true&&react-scripts eject"
+    "start": "export DISABLE_NEW_JSX_TRANSFORM=true&&react-app-rewired start",
+    "build": "export DISABLE_NEW_JSX_TRANSFORM=true&&react-app-rewired build",
+    "test": "export DISABLE_NEW_JSX_TRANSFORM=true&&react-app-rewired test",
+    "eject": "export DISABLE_NEW_JSX_TRANSFORM=true&&react-app-rewired eject"
   },
   "eslintConfig": {
     "extends": [
@@ -34,5 +34,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-decorators": "^7.16.0",
+    "customize-cra": "^1.0.0",
+    "react-app-rewired": "^2.1.8"
   }
 }

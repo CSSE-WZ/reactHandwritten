@@ -1,120 +1,40 @@
 import React from './react';
 import ReactDOM from './react-dom'; //React 的DOM渲染库
 
-let ThemeContext = React.createContext();
-// ThemeContext = { Provider, Consumer } // Provider提供者 Consumer 消费者:一般使用在函数组件中
-let { Provider, Consumer } = ThemeContext;
-function Header() {
-  return (
-    <Consumer>
-      {value => (
-        <div
-          style={{
-            margin: '10px',
-            border: `1px solid ${value.color}`,
-            padding: '5px',
-          }}
-        >
-          头部
-          <Title />
-        </div>
-      )}
-    </Consumer>
-  );
-}
-// class Header extends React.Component {
-//   static contextType = ThemeContext;
-//   render() {
-//     return (
-//       <div
-//         style={{
-//           margin: '10px',
-//           border: `1px solid ${this.context.color}`,
-//           padding: '5px',
-//         }}
-//       >
-//         头部
-//         <Title />
-//       </div>
-//     );
-//   }
-// }
-class Title extends React.Component {
-  static contextType = ThemeContext;
-  render() {
-    return (
-      <div
-        style={{
-          margin: '10px',
-          border: `1px solid ${this.context.color}`,
-          padding: '5px',
-        }}
-      >
-        标题
-      </div>
-    );
-  }
-}
-class Main extends React.Component {
-  static contextType = ThemeContext;
-  render() {
-    return (
-      <div
-        style={{
-          margin: '10px',
-          border: `1px solid ${this.context.color}`,
-          padding: '5px',
-        }}
-      >
-        主体区
-        <Content />
-      </div>
-    );
-  }
-}
-class Content extends React.Component {
-  static contextType = ThemeContext;
-  render() {
-    return (
-      <div
-        style={{
-          margin: '10px',
-          border: `1px solid ${this.context.color}`,
-          padding: '5px',
-        }}
-      >
-        内容
-        <button onClick={() => this.context.changeColor('red')}>变红</button>
-        <button onClick={() => this.context.changeColor('green')}>变绿</button>
-      </div>
-    );
-  }
-}
-class Page extends React.Component {
-  state = { color: 'red' };
+// 高阶组件就是一个函数，传给它一个组件，返回一个新组件
+// 高阶组件的作用其实就是为了组件之间的代码复用
+// 两大用途：属性代理 反向继承
+// const NewComponent = higherOrderComponent(OldComponent)
 
-  changeColor = color => {
-    this.setState({ color });
+// 高阶组件来自于高阶函数
+const withLoading = OldComponent => {
+  return class extends React.Component {
+    show = () => {
+      let div = document.createElement('div');
+      div.innerHTML = `<p id='loading' style="position: absolute;top:100px;z-index:10;background-color:gray">loading...</p>`;
+      document.body.appendChild(div);
+    };
+
+    hide = () => {
+      document.getElementById('loading') &&
+        document.getElementById('loading').remove();
+    };
+
+    render() {
+      return <OldComponent {...this.props} show={this.show} hide={this.hide} />;
+    }
   };
-
+};
+@withLoading
+class Panel extends React.Component {
   render() {
-    let value = { color: this.state.color, changeColor: this.changeColor };
     return (
-      <Provider value={value}>
-        <div
-          style={{
-            margin: '10px',
-            border: `2px solid ${this.state.color}`,
-            padding: '5px',
-            width: '200px',
-          }}
-        >
-          <Header />
-          <Main />
-        </div>
-      </Provider>
+      <div>
+        <button onClick={this.props.show}>显示</button>
+        <button onClick={this.props.hide}>隐藏</button>
+      </div>
     );
   }
 }
-
-ReactDOM.render(<Page />, document.getElementById('root'));
+// let LoadingPanel = withLoading(Panel);
+ReactDOM.render(<Panel />, document.getElementById('root'));
