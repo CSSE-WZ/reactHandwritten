@@ -1,4 +1,5 @@
 import { compareTwoVdom, findDOM } from './react-dom';
+import { shallowEqual } from './utils';
 
 export let updateQueue = {
   isBatchingUpdate: false, // 通过此变量来控制是否批量更新
@@ -143,3 +144,12 @@ export class Component {
 }
 
 // Component.prototype.isReactComponent = {};  //源码实现:isReactComponent用于后续判断组件类型是函数组件还是类组件
+
+export class PureComponent extends Component {
+  shouldComponentUpdate(nextProps, nextState) {
+    return (
+      !shallowEqual(this.props, nextProps) ||
+      !shallowEqual(this.state, nextState)
+    );
+  }
+}

@@ -1,4 +1,4 @@
-import { Component } from './Component';
+import { Component, PureComponent } from './Component';
 import { REACT_FORWARD_REF_TYPE } from './constants';
 import { warpToDOM } from './utils';
 
@@ -13,7 +13,7 @@ function createElement(type, config, children) {
   let key; // 用来区分同一个父亲的不同的儿子
   if (config) {
     delete config.__source;
-    delete config.self;
+    delete config.__self;
     ref = config.ref;
     // delete config.ref;
     key = config.key;
@@ -26,7 +26,9 @@ function createElement(type, config, children) {
     props.children = Array.prototype.slice.call(arguments, 2).map(warpToDOM);
   } else {
     // 注意：此处children可能为0、null、undefined等情况
-    props.children = warpToDOM(children);
+    if (typeof children !== 'undefined') {
+      props.children = warpToDOM(children);
+    }
   }
 
   return {
@@ -83,10 +85,10 @@ function createContext() {
   }
   return context;
 }
-
 const React = {
   createElement,
   Component,
+  PureComponent,
   createRef,
   forwardRef,
   createContext,

@@ -1,35 +1,36 @@
 import React from './react';
 import ReactDOM from './react-dom'; //React 的DOM渲染库
 
-class MouseTracker extends React.Component {
-  state = { x: 0, y: 0 };
-  handleMouseMove = event => {
-    this.setState({ x: event.clientX, y: event.clientY });
+class SubCounter extends React.PureComponent {
+  render() {
+    console.log('SubCounter---');
+    return <div>SubCounter: {this.props.count}</div>;
+  }
+}
+
+class Counter extends React.PureComponent {
+  state = { number: 0 };
+  inputRef = React.createRef();
+
+  handleClick = () => {
+    let mount = Number(this.inputRef.current.value);
+
+    // this.setState(this.state);
+    this.setState({ number: this.state.number + mount });
   };
 
   render() {
+    console.log('Counter---');
+
     return (
-      <div onMouseMove={this.handleMouseMove}>
-        {/* <h1>移动鼠标</h1>
-        <p>
-          当前鼠标的位置是x={this.state.x} y={this.state.y}
-        </p> */}
-        {this.props.render(this.state)}
+      <div>
+        <p>Counter: {this.state.number}</p>
+        <input ref={this.inputRef} />
+        <button onClick={this.handleClick}> + </button>
+        <SubCounter count={this.state.number} />
       </div>
     );
   }
 }
-// ReactDOM.render(<MouseTracker />, document.getElementById('root'));
-ReactDOM.render(
-  <MouseTracker
-    render={props => (
-      <div>
-        <h1>移动鼠标</h1>
-        <p>
-          当前鼠标的位置是x={props.x} y={props.y}
-        </p>
-      </div>
-    )}
-  />,
-  document.getElementById('root')
-);
+
+ReactDOM.render(<Counter />, document.getElementById('root'));
