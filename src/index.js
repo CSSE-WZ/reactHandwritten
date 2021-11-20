@@ -1,14 +1,21 @@
 import React from './react';
 import ReactDOM from './react-dom'; //React 的DOM渲染库
 
-class SubCounter extends React.PureComponent {
-  render() {
-    console.log('SubCounter---');
-    return <div>SubCounter: {this.props.count}</div>;
-  }
+// class SubCounter extends React.PureComponent {
+//   render() {
+//     console.log('SubCounter---');
+//     return <div>SubCounter: {this.props.count}</div>;
+//   }
+// }
+function SubCounter(props) {
+  console.log('SubCounter---');
+
+  return <div>SubCounter: {props.count}</div>;
 }
 
-class Counter extends React.PureComponent {
+let MomoSubCounter = React.memo(SubCounter);
+
+class Counter extends React.Component {
   state = { number: 0 };
   inputRef = React.createRef();
 
@@ -27,7 +34,7 @@ class Counter extends React.PureComponent {
         <p>Counter: {this.state.number}</p>
         <input ref={this.inputRef} />
         <button onClick={this.handleClick}> + </button>
-        <SubCounter count={this.state.number} />
+        <MomoSubCounter count={this.state.number} />
       </div>
     );
   }

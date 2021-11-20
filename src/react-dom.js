@@ -1,4 +1,4 @@
-import { REACT_FORWARD_REF_TYPE, REACT_TEXT } from './constants';
+import { REACT_FORWARD_REF_TYPE, REACT_TEXT, REACT_MEMO } from './constants';
 import { addEvent } from './event';
 
 /**
@@ -21,9 +21,10 @@ function render(vdom, container) {
 function createDOM(vdom) {
   let { type, props, ref } = vdom;
   let dom; // 真实DOM元素
-
-  // 如果type.$$typeof属性是REACT_FORWARD_REF_TYPE
-  if (type && type.$$typeof === REACT_FORWARD_REF_TYPE) {
+  if (type && type.$$typeof === REACT_MEMO) {
+    return mountMemoComponent(vdom);
+  } else if (type && type.$$typeof === REACT_FORWARD_REF_TYPE) {
+    // 如果type.$$typeof属性是REACT_FORWARD_REF_TYPE
     return mountForwardComponent(vdom);
   } else if (type === REACT_TEXT) {
     dom = document.createTextNode(props.content); // 文本元素，字符串或数字
@@ -53,6 +54,13 @@ function createDOM(vdom) {
     ref.current = dom; // 让ref.current属性指向真实的DOM实例
   }
   return dom;
+}
+function mountMemoComponent(vdom) {
+  let { type, props } = vdom;
+  let renderVdom = type.type(props);
+  vdom.prevProps = props; // 记录一下老属性，在更新的时候会用到
+  vdom.renderVdom = renderVdom;
+  return createDOM(renderVdom);
 }
 
 function mountForwardComponent(vdom) {
@@ -200,7 +208,10 @@ export function compareTwoVdom(parentDOM, oldVdom, newVdom, nextDOM) {
 
 function updateElement(oldVdom, newVdom) {
   // oldVdom.type 类组件 函数组件 文本组件 String（原生组件）
-  if (oldVdom.type === REACT_TEXT && newVdom.type === REACT_TEXT) {
+  if (oldVdom.type && oldVdom.type.$$typeof === REACT_MEMO) {
+    debugger;
+    updateMemoComponent(oldVdom, newVdom);
+  } else if (oldVdom.type === REACT_TEXT && newVdom.type === REACT_TEXT) {
     // --说明是文本节点的更新
     let currentDOM = (newVdom.dom = findDOM(oldVdom));
     if (oldVdom.props.content !== newVdom.props.content) {
@@ -222,6 +233,22 @@ function updateElement(oldVdom, newVdom) {
       // --说明是一个函数组件
       updateFunctionComponent(oldVdom, newVdom);
     }
+  }
+}
+
+function updateMemoComponent(oldVdom, newVdom) {
+  let { type, prevProps } = oldVdom;
+  // 比较老的属性对象和新的属性对象
+  if (type.compare(prevProps, newVdom.props)) {
+    newVdom.oldRenderVdom = oldVdom.oldRenderVdom;
+    newVdom.prevProps = newVdom.props; // 记录一下老属性，在更新的时候会用到
+  } else {
+    let parentDOM = findDOM(oldVdom).parentNode;
+    let { type, props } = newVdom;
+    let renderVdom = type.type(props);
+    newVdom.oldRenderVdom = renderVdom;
+    newVdom.prevProps = newVdom.props; // 记录一下老属性，在更新的时候会用到
+    compareTwoVdom(parentDOM, oldVdom.oldRenderVdom, renderVdom);
   }
 }
 

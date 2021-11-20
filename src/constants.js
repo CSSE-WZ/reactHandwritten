@@ -3,3 +3,4 @@
 export const REACT_TEXT = Symbol('REACT_TEXT');
 
 export const REACT_FORWARD_REF_TYPE = Symbol('React_forward_ref');
+export const REACT_MEMO = Symbol('React.memo');

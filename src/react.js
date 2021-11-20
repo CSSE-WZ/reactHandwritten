@@ -1,6 +1,6 @@
 import { Component, PureComponent } from './Component';
-import { REACT_FORWARD_REF_TYPE } from './constants';
-import { warpToDOM } from './utils';
+import { REACT_FORWARD_REF_TYPE, REACT_MEMO } from './constants';
+import { shallowEqual, warpToDOM } from './utils';
 
 /**
  * 返回React元素即虚拟DOM，本质还是一个JS对象
@@ -85,6 +85,13 @@ function createContext() {
   }
   return context;
 }
+function memo(type, compare = shallowEqual) {
+  return {
+    $$typeof: REACT_MEMO,
+    type, // 真正的函数组件
+    compare,
+  };
+}
 const React = {
   createElement,
   Component,
@@ -93,6 +100,7 @@ const React = {
   forwardRef,
   createContext,
   cloneElement,
+  memo,
 };
 
 export default React;
