@@ -8,7 +8,7 @@ import ReactDOM from './react-dom'; //React 的DOM渲染库
 //   }
 // }
 function SubCounter(props) {
-  console.log('SubCounter---');
+  console.log('SubCounter---', props.count);
 
   return <div>SubCounter: {props.count}</div>;
 }
@@ -27,7 +27,7 @@ class Counter extends React.Component {
   };
 
   render() {
-    console.log('Counter---');
+    console.log('Counter---', this.state.number);
 
     return (
       <div>

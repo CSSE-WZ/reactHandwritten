@@ -125,7 +125,7 @@ export class Component {
 
     // 如果类上有contextType属性，则给类的实例添加context属性
     if (this.constructor.contextType) {
-      this.context = this.constructor.contextType._value;
+      this.context = this.constructor.contextType._currentValue;
     }
 
     let newRenderVdom = this.render(); // 新的虚拟DOM

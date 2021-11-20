@@ -1,5 +1,10 @@
 import { Component, PureComponent } from './Component';
-import { REACT_FORWARD_REF_TYPE, REACT_MEMO } from './constants';
+import {
+  REACT_CONTEXT,
+  REACT_FORWARD_REF_TYPE,
+  REACT_MEMO,
+  REACT_PROVIDER,
+} from './constants';
 import { shallowEqual, warpToDOM } from './utils';
 
 /**
@@ -74,17 +79,25 @@ function forwardRef(render) {
   };
 }
 
+// function createContext() {
+//   let context = { Provider, Consumer };
+//   function Provider({ value, children }) {
+//     context._value = value;
+//     return children;
+//   }
+//   function Consumer({ children }) {
+//     return children(context._value);
+//   }
+//   return context;
+// }
+
 function createContext() {
-  let context = { Provider, Consumer };
-  function Provider({ value, children }) {
-    context._value = value;
-    return children;
-  }
-  function Consumer({ children }) {
-    return children(context._value);
-  }
+  let context = { $$typeof: REACT_CONTEXT };
+  context.Provider = { $$typeof: REACT_PROVIDER, _context: context };
+  context.Consumer = { $$typeof: REACT_CONTEXT, _context: context };
   return context;
 }
+
 function memo(type, compare = shallowEqual) {
   return {
     $$typeof: REACT_MEMO,
