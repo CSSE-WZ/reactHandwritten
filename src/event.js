@@ -6,14 +6,15 @@ import { updateQueue } from './Component';
  * @param {*} eventType
  * @param {*} handler
  */
-export function addEvent(dom, eventType, handler) {
-  let store = (dom.store = dom.store || {}); // 是一个对象，存放当前DOM上对应的事件处理函数
-  // if (dom.store) {
-  //   store = dom.store;
-  // } else {
-  //   dom.store = {};
-  //   store = dom.store;
-  // }
+export function addEvent (dom, eventType, handler) {
+  // let store = (dom.store = dom.store || {}); // 是一个对象，存放当前DOM上对应的事件处理函数
+  let store;
+  if (dom.store) {
+    store = dom.store;
+  } else {
+    dom.store = {};
+    store = dom.store;
+  }
 
   // store.onclick = handleClick
   store[eventType] = handler;
@@ -24,7 +25,7 @@ export function addEvent(dom, eventType, handler) {
   }
 }
 
-function dispatchEvent(event) {
+function dispatchEvent (event) {
   let { target, type } = event;
   let eventType = `on${type}`; // onclick
   updateQueue.isBatchingUpdate = true; // 切换到批量更新模式
@@ -43,7 +44,7 @@ function dispatchEvent(event) {
 }
 
 // 在源码里，此处做了一些浏览器兼容性适配
-function createSyntheticEvent(event) {
+function createSyntheticEvent (event) {
   let syntheticEvent = {};
   for (let key in event) {
     syntheticEvent[key] = event[key];

@@ -6,13 +6,33 @@ import {
   REACT_CONTEXT,
 } from './constants';
 import { addEvent } from './event';
-
+import _ from 'lodash';
 /**
  * 把虚拟DOM转成真实DOM插入容器
  * @param {*} vdom 虚拟DOM
  * @param {*} container 容器
  */
-function render(vdom, container) {
+// function render (vdom, container) {
+//   let newDOM = createDOM(vdom);
+//   container.appendChild(newDOM);
+//   if (newDOM.componentDidMount) {
+//     newDOM.componentDidMount();
+//   }
+// }
+let hookState = []; //存放着所有的状态
+let hookIndex = 0; // 当前的执行的hook的索引
+let scheduleUpdate; // 调度更新算法
+function render (vdom, container) {
+  mount(vdom, container);
+  scheduleUpdate = () => {
+    let newVdom = _.cloneDeep(vdom);
+    hookIndex = 0;
+    // vdom不是当前的更新，而是根元素
+    compareTwoVdom(container, vdom, newVdom)
+  }
+}
+
+function mount (vdom, container) {
   let newDOM = createDOM(vdom);
   container.appendChild(newDOM);
   if (newDOM.componentDidMount) {
@@ -20,11 +40,21 @@ function render(vdom, container) {
   }
 }
 
+export function useState (initialState) {
+  hookState[hookIndex] = hookState[hookIndex] || initialState;
+  let currentIndex = hookIndex;
+  function setState (newState) {
+    hookState[currentIndex] = newState;
+    scheduleUpdate();
+  }
+  return [hookState[hookIndex++], setState]
+}
+
 /**
  * 把虚拟DOM转成真实DOM
  * @param {*} vdom  虚拟DOM
  */
-function createDOM(vdom) {
+function createDOM (vdom) {
   let { type, props, ref } = vdom;
   let dom; // 真实DOM元素
   if (type && type.$$typeof === REACT_MEMO) {
@@ -67,7 +97,7 @@ function createDOM(vdom) {
   }
   return dom;
 }
-function mountMemoComponent(vdom) {
+function mountMemoComponent (vdom) {
   let { type, props } = vdom;
   let renderVdom = type.type(props);
   vdom.prevProps = props; // 记录一下老属性，在更新的时候会用到
@@ -75,13 +105,13 @@ function mountMemoComponent(vdom) {
   return createDOM(renderVdom);
 }
 
-function mountContextComponent(vdom) {
+function mountContextComponent (vdom) {
   let { type, props } = vdom;
   let renderVdom = props.children(type._context._currentValue);
   vdom.oldRenderVdom = renderVdom;
   return createDOM(renderVdom);
 }
-function mountProviderComponent(vdom) {
+function mountProviderComponent (vdom) {
   // type:{ $$typeof: REACT_PROVIDER, _context: context }
   let { type, props } = vdom;
 
@@ -92,7 +122,7 @@ function mountProviderComponent(vdom) {
   return createDOM(renderVdom);
 }
 
-function mountForwardComponent(vdom) {
+function mountForwardComponent (vdom) {
   let { type, props, ref } = vdom;
   let renderVdom = type.render(props, ref);
   vdom.oldRenderVdom = renderVdom;
@@ -102,7 +132,7 @@ function mountForwardComponent(vdom) {
  * 挂载类组件
  * @param {*} vdom
  */
-function mountClassComponent(vdom) {
+function mountClassComponent (vdom) {
   let { type, props, ref } = vdom;
   let defaultProps = type.defaultProps || {};
   let classInstance = new type({ ...defaultProps, ...props });
@@ -134,14 +164,14 @@ function mountClassComponent(vdom) {
  * @param {*} vdom
  * @returns
  */
-function mountFunctionComponent(vdom) {
+function mountFunctionComponent (vdom) {
   let { type, props } = vdom;
   let renderVdom = type(props);
   vdom.oldRenderVdom = renderVdom;
   return createDOM(renderVdom);
 }
 
-function reconcileChildren(childrenVdom, parentDOM) {
+function reconcileChildren (childrenVdom, parentDOM) {
   for (let i = 0; i < childrenVdom.length; i++) {
     render(childrenVdom[i], parentDOM);
   }
@@ -152,7 +182,7 @@ function reconcileChildren(childrenVdom, parentDOM) {
  * @param {*} oldProps 旧属性
  * @param {*} newProps 新属性
  */
-function updateProps(dom, oldProps, newProps) {
+function updateProps (dom, oldProps, newProps) {
   for (let key in newProps) {
     if (key === 'children') {
       continue; // 后面会单独处理children属性，所以此处跳过
@@ -178,7 +208,7 @@ function updateProps(dom, oldProps, newProps) {
  * 根据虚拟DOM返回真实DOM
  * @param {*} vdom
  */
-export function findDOM(vdom) {
+export function findDOM (vdom) {
   let { type } = vdom;
   let dom;
   if (typeof type === 'string' || type === REACT_TEXT) {
@@ -198,7 +228,7 @@ export function findDOM(vdom) {
  * @param {*} nextDOM 当前DOM节点的下一个真实DOM节点
  */
 
-export function compareTwoVdom(parentDOM, oldVdom, newVdom, nextDOM) {
+export function compareTwoVdom (parentDOM, oldVdom, newVdom, nextDOM) {
   if (!oldVdom && !newVdom) {
     // 如果新老虚拟DOM都是null,则返回null
   } else if (oldVdom && !newVdom) {
@@ -236,7 +266,7 @@ export function compareTwoVdom(parentDOM, oldVdom, newVdom, nextDOM) {
   }
 }
 
-function updateElement(oldVdom, newVdom) {
+function updateElement (oldVdom, newVdom) {
   // oldVdom.type 类组件 函数组件 文本组件 String（原生组件）
   if (oldVdom.type && oldVdom.type.$$typeof === REACT_MEMO) {
     updateMemoComponent(oldVdom, newVdom);
@@ -271,7 +301,7 @@ function updateElement(oldVdom, newVdom) {
   }
 }
 
-function updateMemoComponent(oldVdom, newVdom) {
+function updateMemoComponent (oldVdom, newVdom) {
   let { type, prevProps } = oldVdom;
   // 比较老的属性对象和新的属性对象
   if (type.compare(prevProps, newVdom.props)) {
@@ -287,7 +317,7 @@ function updateMemoComponent(oldVdom, newVdom) {
   }
 }
 
-function updateProviderComponent(oldVdom, newVdom) {
+function updateProviderComponent (oldVdom, newVdom) {
   let parentDOM = findDOM(oldVdom).parentNode;
   let { type, props } = newVdom;
   type._context._currentValue = props.value;
@@ -296,7 +326,7 @@ function updateProviderComponent(oldVdom, newVdom) {
   compareTwoVdom(parentDOM, oldVdom.oldRenderVdom, renderVdom);
 }
 
-function updateContextComponent(oldVdom, newVdom) {
+function updateContextComponent (oldVdom, newVdom) {
   let parentDOM = findDOM(oldVdom).parentNode;
   let { type, props } = newVdom;
   let renderVdom = props.children(type._context._currentValue);
@@ -304,10 +334,11 @@ function updateContextComponent(oldVdom, newVdom) {
   compareTwoVdom(parentDOM, oldVdom.oldRenderVdom, renderVdom);
 }
 
-function updateFunctionComponent(oldVdom, newVdom) {
+function updateFunctionComponent (oldVdom, newVdom) {
   let parentDOM = findDOM(oldVdom).parentNode;
   let { type, props } = newVdom;
   let renderVdom = type(props);
+  // debugger
   newVdom.oldRenderVdom = renderVdom;
   compareTwoVdom(parentDOM, oldVdom.oldRenderVdom, renderVdom);
 }
@@ -316,7 +347,7 @@ function updateFunctionComponent(oldVdom, newVdom) {
  * @param {*} oldVdom
  * @param {*} newVdom
  */
-function updateClassComponent(oldVdom, newVdom) {
+function updateClassComponent (oldVdom, newVdom) {
   let classInstance = (newVdom.classInstance = oldVdom.classInstance);
   newVdom.oldRenderVdom = oldVdom.oldRenderVdom;
   // 因为这里是由于父组件更新引起的更新，当父组件重新渲染时，给子组件传递新的属性
@@ -332,7 +363,7 @@ function updateClassComponent(oldVdom, newVdom) {
  * @param {*} oldVChildren
  * @param {*} newVChildren
  */
-function updateChildren(parentDOM, oldVChildren, newVChildren) {
+function updateChildren (parentDOM, oldVChildren, newVChildren) {
   oldVChildren = Array.isArray(oldVChildren) ? oldVChildren : [oldVChildren];
   newVChildren = Array.isArray(newVChildren) ? newVChildren : [newVChildren];
   let maxLength = Math.max(oldVChildren.length, newVChildren.length);

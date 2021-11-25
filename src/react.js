@@ -6,14 +6,14 @@ import {
   REACT_PROVIDER,
 } from './constants';
 import { shallowEqual, warpToDOM } from './utils';
-
+import { useState } from './react-dom'
 /**
  * 返回React元素即虚拟DOM，本质还是一个JS对象
  * @param {*} type 类型
  * @param {*} config 配置对象，即属性对象
  * @param {*} children 第一个儿子
  */
-function createElement(type, config, children) {
+function createElement (type, config, children) {
   let ref; // 用来获取虚拟DOM实例的
   let key; // 用来区分同一个父亲的不同的儿子
   if (config) {
@@ -50,7 +50,7 @@ function createElement(type, config, children) {
  * @param {*} children 新的儿子们
  * @return {*} newElement 返回新元素
  */
-function cloneElement(oldElement, newProps, children) {
+function cloneElement (oldElement, newProps, children) {
   if (arguments.length > 3) {
     children = Array.prototype.slice.call(arguments, 2).map(warpToDOM);
   } else {
@@ -60,7 +60,7 @@ function cloneElement(oldElement, newProps, children) {
   return { ...oldElement, props };
 }
 
-function createRef() {
+function createRef () {
   return { current: null };
 }
 
@@ -72,7 +72,7 @@ function createRef() {
 //   };
 // }
 
-function forwardRef(render) {
+function forwardRef (render) {
   return {
     $$typeof: REACT_FORWARD_REF_TYPE,
     render, // 原来的那个函数组件
@@ -91,14 +91,14 @@ function forwardRef(render) {
 //   return context;
 // }
 
-function createContext() {
+function createContext () {
   let context = { $$typeof: REACT_CONTEXT };
   context.Provider = { $$typeof: REACT_PROVIDER, _context: context };
   context.Consumer = { $$typeof: REACT_CONTEXT, _context: context };
   return context;
 }
 
-function memo(type, compare = shallowEqual) {
+function memo (type, compare = shallowEqual) {
   return {
     $$typeof: REACT_MEMO,
     type, // 真正的函数组件
@@ -114,6 +114,7 @@ const React = {
   createContext,
   cloneElement,
   memo,
+  useState,
 };
 
 export default React;
