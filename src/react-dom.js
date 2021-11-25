@@ -50,6 +50,46 @@ export function useState (initialState) {
   return [hookState[hookIndex++], setState]
 }
 
+export function useMemo (factory, deps) {
+  if (hookState[hookIndex]) {
+    // 说明不是第一次更新
+    let [lastMemo, lastDeps] = hookState[hookIndex];
+    let everySame = deps.every((item, index) => item === lastDeps[index]);
+    if (everySame) {
+      hookIndex++;
+      return lastMemo
+    } else {
+      let newMemo = factory();
+      hookState[hookIndex] = [newMemo, deps];
+      return newMemo;
+    }
+  } else {
+    // 说明是第一次更新
+    let newMemo = factory();
+    hookState[hookIndex++] = [newMemo, deps];
+    return newMemo;
+  }
+}
+
+export function useCallback (callback, deps) {
+  if (hookState[hookIndex]) {
+    // 说明不是第一次更新
+    let [lastCallback, lastDeps] = hookState[hookIndex];
+    let everySame = deps.every((item, index) => item === lastDeps[index]);
+    if (everySame) {
+      hookIndex++;
+      return lastCallback
+    } else {
+      hookState[hookIndex] = [callback, deps];
+      return callback;
+    }
+  } else {
+    // 说明是第一次更新
+    hookState[hookIndex++] = [callback, deps];
+    return callback;
+  }
+}
+
 /**
  * 把虚拟DOM转成真实DOM
  * @param {*} vdom  虚拟DOM

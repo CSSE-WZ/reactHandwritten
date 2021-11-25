@@ -6,29 +6,33 @@ import ReactDOM from './react-dom'; //React 的DOM渲染库
 //  不好，因为对象的属性是定死的，而数组可以重命名。
 
 // 如果组件嵌套层级深的话，每次更新会很慢，需要遍历很多层，所以需要引入Fiber，做调度，暂停渲染做其他优先级更高的事情
-function Counter1 () {
-  const [number, setNumber] = React.useState('Counter1');
-  const [number1, setNumber1] = React.useState(1);
+function Child ({ data, handleClick }) {
+  console.log('Child render');
   return (
-    <div>
-      Counter1: {number}
-      <p>{number1}</p>
-    </div >
+    <button onClick={handleClick}>{data.number}</button>
   )
 
 }
+// memo 是什么？备忘录，属性变了重新渲染，属性不变，不重新渲染。
+// React.useMemo React.useCallback 依赖项未改变时，使用上次的值，改变的话，重新计算值；
+let MemoChild = React.memo(Child);
 
-
+let lastData;
 function Counter () {
+  console.log('Counter render');
+
+  const [name, setName] = React.useState('haha');
   const [number, setNumber] = React.useState(0);
-  const [number1, setNumber1] = React.useState(1);
-  const [number2, setNumber2] = React.useState(2);
+  // let data = { number };
+  // let handleClick = () => setNumber(number + 1)
+  let data = React.useMemo(() => ({ number }), [number]);
+  console.log(data === lastData);
+  lastData = data;
+  let handleClick = React.useCallback(() => setNumber(number + 1), [number]);
   return (
     <div>
-      SubCounter: {number}
-      <p>{number1}</p>
-      <p>{number2}</p>
-      <Counter1 />
+      <input value={name} onChange={event => setName(event.target.value)} />
+      <MemoChild handleClick={handleClick} data={data} />
       <button onClick={() => { setNumber(number + 1) }}> + </button>
     </div >
   )
