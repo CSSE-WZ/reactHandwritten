@@ -105,6 +105,10 @@ function memo (type, compare = shallowEqual) {
     compare,
   };
 }
+
+function useContext (context) {
+  return context._currentValue
+}
 const React = {
   createElement,
   Component,
@@ -117,7 +121,8 @@ const React = {
   useState,
   useMemo,
   useCallback,
-  useReducer
+  useReducer,
+  useContext
 };
 
 export default React;

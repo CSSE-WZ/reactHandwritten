@@ -1,6 +1,8 @@
 import React from './react';
 import ReactDOM from './react-dom'; //React 的DOM渲染库
 
+// hooks本质是函数 函数的作用是管理一个全局变量
+let CounterContext = React.createContext();
 function reducer (state, action) {
   switch (action.type) {
     case 'add':
@@ -12,21 +14,27 @@ function reducer (state, action) {
   }
 }
 function Counter () {
-  const [count, setCount] = React.useState(0)
-  const [state, dispatch] = React.useReducer(reducer, { number: 0 })
+  const { state, dispatch } = React.useContext(CounterContext)
   return (
     <div>
-      <p>{count}</p>
-      <button onClick={() => setCount(count + 1)}> - </button>
       <p>{state.number}</p>
       <button onClick={() => dispatch({ type: 'add' })}> + </button>
       <button onClick={() => dispatch({ type: 'minus' })}> - </button>
     </div >
   )
-
 }
 
-ReactDOM.render(<Counter />, document.getElementById('root'));
+function App () {
+  const [state, dispatch] = React.useReducer(reducer, { number: 0 })
+
+  return (
+    <CounterContext.Provider value={({ state, dispatch })}>
+      <Counter />
+    </CounterContext.Provider>
+  )
+}
+
+ReactDOM.render(<App />, document.getElementById('root'));
 
 
 // import React from './react';
