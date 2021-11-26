@@ -41,13 +41,28 @@ function mount (vdom, container) {
 }
 
 export function useState (initialState) {
+  return useReducer(null, initialState)
+}
+
+// useState 是useReducer的语法糖
+// export function useState (initialState) {
+//   hookState[hookIndex] = hookState[hookIndex] || initialState;
+//   let currentIndex = hookIndex;
+//   function setState (newState) {
+//     hookState[currentIndex] = newState;
+//     scheduleUpdate();
+//   }
+//   return [hookState[hookIndex++], setState]
+// }
+
+export function useReducer (reducer, initialState) {
   hookState[hookIndex] = hookState[hookIndex] || initialState;
   let currentIndex = hookIndex;
-  function setState (newState) {
-    hookState[currentIndex] = newState;
+  function dispatch (action) {
+    hookState[currentIndex] = reducer ? reducer(hookState[currentIndex], action) : action;
     scheduleUpdate();
   }
-  return [hookState[hookIndex++], setState]
+  return [hookState[hookIndex++], dispatch]
 }
 
 export function useMemo (factory, deps) {
