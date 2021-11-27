@@ -43,8 +43,36 @@ function mount (vdom, container) {
 export function useState (initialState) {
   return useReducer(null, initialState)
 }
+
+export function useRef () {
+  if (!hookState[hookIndex]) {
+    hookState[hookIndex] = { cuttrnt: null }
+  }
+  return hookState[hookIndex++]
+}
+
+export function useLayoutEffect (callback, deps) {
+  if (hookState[hookIndex]) {
+    let [destroy, lastDeps] = hookState[hookIndex];
+    let everySame = deps.every((item, index) => item === lastDeps[index]);
+    if (everySame) {
+      hookIndex++;
+    } else {
+      destroy && destroy(); // 优先执行销毁函数，销毁函数每次都是在下一次执行之前触发执行的
+      queueMicrotask(() => {
+        let destroy = callback(); // 销毁函数
+        hookState[hookIndex++] = [destroy, deps]
+      })
+    }
+  } else {
+    queueMicrotask(() => {
+      // 初次渲染的时候，开启一个宏任务，在宏任务里执行callback,保存销毁函数和依赖数组
+      let destroy = callback(); // 销毁函数
+      hookState[hookIndex++] = [destroy, deps]
+    })
+  }
+}
 /**
- * 
  * @param {*} callback 当前渲染完成后的下一个宏任务
  * @param {*} deps 依赖数组
  */

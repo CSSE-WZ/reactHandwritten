@@ -6,7 +6,7 @@ import {
   REACT_PROVIDER,
 } from './constants';
 import { shallowEqual, warpToDOM } from './utils';
-import { useState, useMemo, useCallback, useReducer, useEffect } from './react-dom'
+import { useState, useMemo, useCallback, useReducer, useEffect, useLayoutEffect, useRef } from './react-dom'
 /**
  * 返回React元素即虚拟DOM，本质还是一个JS对象
  * @param {*} type 类型
@@ -123,7 +123,9 @@ const React = {
   useCallback,
   useReducer,
   useContext,
-  useEffect
+  useEffect,
+  useLayoutEffect,
+  useRef
 };
 
 export default React;

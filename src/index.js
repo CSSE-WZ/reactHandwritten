@@ -7,27 +7,28 @@ import ReactDOM from './react-dom'; //React 的DOM渲染库
  * 什么是纯函数？
  * 1、不能修改参数；2、不能修改函数作用域外的变量；
  * 除此之外都是副作用，如：修改DOM，修改全局变量，调用接口，开启定时器。
- * @returns 
+ * 
+ * useEffect 不会阻塞浏览器渲染，而 useLayoutEffect 会阻塞浏览器渲染；
+ * useEffect 会在浏览器渲染结束后执行，而 useLayoutEffect 则是在DOM更新完成后，浏览器绘制之前执行。
  */
 
-function Counter () {
-  const [number, setNumber] = React.useState(0)
+function Animation () {
+  const ref = React.useRef();
+  /**
+   * useLayoutEffect 是在绘制前执行的，useEffect 是在绘制后执行的
+   */
+  // React.useLayoutEffect(() => {
   React.useEffect(() => {
-    console.log('开启一个新的定时器！', number);
-    const timer = setInterval(() => {
-      setNumber(number + 1)
-    }, 1000)
-    return () => {
-      console.log('清空定时器！', number);
-      clearInterval(timer);
-    }
-  }, [number])
-  return (
-    <div>
-      <p>{number}</p>
-    </div >
-  )
+    ref.current.style.webkitTransform = 'translate(500px)';
+    ref.current.style.transition = 'all 500ms'
+  });
+  let styles = {
+    width: '100px',
+    height: '100px',
+    backgroundColor: 'red'
+  };
+  return <div style={styles} ref={ref}>内容</div>
 }
 
-ReactDOM.render(<Counter />, document.getElementById('root'));
+ReactDOM.render(<Animation />, document.getElementById('root'));
 
