@@ -2,48 +2,60 @@ import React from './react';
 import ReactDOM from './react-dom'; //React 的DOM渲染库
 
 // hooks本质是函数 这些函数的作用是管理一个全局变量 每次渲染都是一个独立的闭包
-// hooks最大的好处就是可以很方便的实现逻辑的复用，拆分功能，任意组合
+// hooks最大的好处就是可以很方便的实现逻辑的复用，拆分功能，任意组合。颗粒化更细，逻辑更加清晰
 /**
- * 什么是纯函数？
- * 1、不能修改参数；2、不能修改函数作用域外的变量；
- * 除此之外都是副作用，如：修改DOM，修改全局变量，调用接口，开启定时器。
+ * 自定义Hooks可以实现逻辑复用，把公共逻辑提取出来，进行复用
+ * 自定义Hooks复用的是逻辑，而不是状态本身
+ * 1.是一个函数
+ * 2.方法名称是use开头
+ * 3.在函数内部需要调用其他的Hooks
  * 
- * useEffect 不会阻塞浏览器渲染，而 useLayoutEffect 会阻塞浏览器渲染；
- * useEffect 会在浏览器渲染结束后执行，而 useLayoutEffect 则是在DOM更新完成后，浏览器绘制之前执行。
- * 
- * forwardRef将ref从父组件转发到子组件中的dom上，子组件接受props和ref作为参数
- * useImperativeHandle 可以让你使用ref时，自定义暴露给父组件的实例值
+ * 应用：表格组件？
  */
-function Child (props, ref) {
-  const childRef = React.useRef();
-  // 在函数组件内自定义暴露给父组件ref对象
-  React.useImperativeHandle(ref, () => ({
-    focus () {
-      childRef.current.focus()
-    },
-    print () {
-      console.log('print');
 
-    }
-  }))
-  return <input ref={childRef} />
-}
-let ForwardChild = React.forwardRef(Child)
-function Parent () {
-  const [number, setNumber] = React.useState(0);
-  const inputRef = React.useRef();
+function useCounter (initialState) {
+  const [number, setNumber] = React.useState(initialState);
   const getFocus = () => {
-    inputRef.current.focus();
-    inputRef.current.print();
-  }
+    setNumber(number + 1)
+  };
+  return [number, getFocus]
+}
+
+function Parent1 () {
+  const [number, getFocus] = useCounter(10);
+  // const [number, setNumber] = React.useState(10);
+  // const getFocus = () => {
+  //   setNumber(number + 1)
+  // }
   return (
     <div>
-      <ForwardChild ref={inputRef} />
-      <button onClick={getFocus}>焦点</button>
+      <p>{number}</p>
+      <button onClick={getFocus}>增加</button>
     </div>
   )
-
+}
+function Parent2 () {
+  // const [number, setNumber] = React.useState(20);
+  const [number, getFocus] = useCounter(20);
+  // const getFocus = () => {
+  //   setNumber(number + 1)
+  // }
+  return (
+    <div>
+      <p>{number}</p>
+      <button onClick={getFocus}>增加</button>
+    </div>
+  )
 }
 
-ReactDOM.render(<Parent />, document.getElementById('root'));
+function App () {
+  return (
+    <div>
+      <Parent1 />
+      <Parent2 />
+    </div>
+  )
+}
+
+ReactDOM.render(<App />, document.getElementById('root'));
 
