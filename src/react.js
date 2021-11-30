@@ -106,6 +106,10 @@ function memo (type, compare = shallowEqual) {
   };
 }
 
+function useImperativeHandle (ref, factory) {
+  ref.current = factory();
+}
+
 function useContext (context) {
   return context._currentValue
 }
@@ -125,7 +129,8 @@ const React = {
   useContext,
   useEffect,
   useLayoutEffect,
-  useRef
+  useRef,
+  useImperativeHandle
 };
 
 export default React;
